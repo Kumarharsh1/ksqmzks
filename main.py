@@ -29,13 +29,16 @@ app.add_middleware(
 
 # Gemini setup
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+model = None
 
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-2.5-flash')
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+        model = genai.GenerativeModel('gemini-2.5-flash')
+    except Exception as e:
+        logger.error(f"Gemini setup failed: {e}")
 else:
     logger.warning("GEMINI_API_KEY not set. Gemini features will be disabled.")
-    model = None
 
 # Chat manager
 chat_manager = ChatManager()
@@ -50,6 +53,10 @@ async def root():
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy", "message": "Backend is running"}
+
+@app.get("/api/env-check")
+async def env_check():
+    return {"key_found": bool(GEMINI_API_KEY)}
 
 @app.post("/api/chat/{assistant_type}")
 async def chat_with_assistant(assistant_type: str, message: dict):
@@ -120,7 +127,3 @@ async def get_assistants():
             {"id": "travel", "name": "Travel & Hospitality", "description": "Trip planning", "emoji": "✈️", "status": "New"}
         ]
     }
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7999)
