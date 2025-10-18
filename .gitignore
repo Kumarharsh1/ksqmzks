@@ -1,7 +1,25 @@
-.env
+# Python artifacts
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
-.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Virtual environments
 env/
+venv/
+venv311/
+.Python
+
+# Environment variables
+.env
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.swp
